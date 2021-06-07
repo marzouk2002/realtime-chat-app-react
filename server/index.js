@@ -1,15 +1,26 @@
-const app = require('express')()
+const app = require("express")();
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
 
-const http = require('http').createServer(app)
+// io.use((socket, next) => {
+//     next();
+// });
 
-const io = require('socket.io')(http)
+io.on("connection", (socket) => {
+    console.log(socket.id);
+    console.log(socket.connected)
 
-io.on('connection', socket => {
-    socket.on('message', ({home, message}) => {
-        io.emit('message', {home, message})
+    socket.on('message-send', ({ name, message }) => {
+        console.log("ff")
+        io.emit('message-show', { name, message })
     })
-})
+    
+    socket.on("disconnect", () => {
+        console.log("Client disconnected");
+    });
+});
 
-http.listen(4000, () => {
-    console.log('Server running on PORT: 4000')
+
+http.listen(4000, function() {
+  console.log('listening on port 4000')
 })

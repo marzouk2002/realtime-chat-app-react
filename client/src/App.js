@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import io from 'socket.io-client'
+import socketIOClient from 'socket.io-client'
 import TextField from '@material-ui/core/TextField'
 import './App.css';
 
-const socket = io.connect('http://localhost:4000')
 
 function App() {
   const [state, setState] = useState({message: '', name: ''})
   const [chat, setChat] = useState([])
+  
+  const socket = socketIOClient(window.location.hostname+":4000");
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log(socket.id); // x8WIv7-mJelg7on_ALbx*
+      console.log(socket.connected)
+    });
+    socket.on("connect_error", (err) => {
+      console.log(err.message)
+      socket.connect();
+    });
+    socket.on('message-show', ({ name, message }) => {
+      console.log("ee")
+      setChat([ ...chat, { name, message }])
+    })
+  }, []);
 
   const handleChange = (e) => {
     setState({...state, [e.target.name]: e.target.value})
@@ -15,6 +31,9 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    const {message, name} = state
+    socket.emit('message-send', {message, name})
+    setState({message: '', name})
   }
 
   const renderChat = () => {
