@@ -12,7 +12,7 @@ function App() {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log(socket.id); // x8WIv7-mJelg7on_ALbx*
+      console.log(socket.id)
       console.log(socket.connected)
     });
     socket.on("connect_error", (err) => {
@@ -23,7 +23,7 @@ function App() {
       console.log("ee")
       setChat([ ...chat, { name, message }])
     })
-  }, []);
+  }, ["1"]);
 
   const handleChange = (e) => {
     setState({...state, [e.target.name]: e.target.value})
